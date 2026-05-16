@@ -1,0 +1,244 @@
+{
+  // ─────────────────────────────────────────────
+  //  AXIOM — VS Code Workspace Settings
+  //  Applies to every teammate who opens this repo
+  // ─────────────────────────────────────────────
+
+  // ── Editor: General ──────────────────────────
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": false,
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": false,
+  "editor.rulers": [80, 120],
+  "editor.wordWrap": "off",
+  "editor.minimap.enabled": true,
+  "editor.minimap.maxColumn": 80,
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs": "active",
+  "editor.inlayHints.enabled": "on",
+  "editor.suggest.preview": true,
+  "editor.linkedEditing": true,
+  "editor.stickyScroll.enabled": true,
+  "editor.cursorBlinking": "smooth",
+  "editor.smoothScrolling": true,
+  "editor.renderWhitespace": "boundary",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "explicit"
+  },
+
+  // ── Default Formatters ───────────────────────
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+  "[solidity]": {
+    "editor.defaultFormatter": "NomicFoundation.hardhat-solidity",
+    "editor.tabSize": 4,
+    "editor.formatOnSave": true,
+    "editor.rulers": [100]
+  },
+
+  "[noir]": {
+    "editor.defaultFormatter": "noir-lang.vscode-noir",
+    "editor.tabSize": 4,
+    "editor.formatOnSave": true
+  },
+
+  "[rust]": {
+    "editor.defaultFormatter": "rust-lang.rust-analyzer",
+    "editor.tabSize": 4,
+    "editor.formatOnSave": true
+  },
+
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.python",
+    "editor.tabSize": 4,
+    "editor.formatOnSave": true
+  },
+
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+
+  "[toml]": {
+    "editor.defaultFormatter": "tamasfe.even-better-toml"
+  },
+
+  "[graphql]": {
+    "editor.defaultFormatter": "GraphQL.vscode-graphql"
+  },
+
+  "[yaml]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+
+  "[dockerfile]": {
+    "editor.defaultFormatter": "ms-azuretools.vscode-docker"
+  },
+
+  "[markdown]": {
+    "editor.wordWrap": "on",
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+
+  // ── File Associations ────────────────────────
+  "files.associations": {
+    "*.nr": "noir",
+    "*.sol": "solidity",
+    "foundry.toml": "toml",
+    "Nargo.toml": "toml",
+    "*.ezkl": "json",
+    "Prover.toml": "toml",
+    "Verifier.toml": "toml",
+    "docker-compose*.yml": "dockercompose"
+  },
+
+  // ── File Exclusions (hide noise from explorer) ─
+  "files.exclude": {
+    "**/.git": true,
+    "**/node_modules": true,
+    "**/target": true,
+    "**/.foundry/cache": true,
+    "**/__pycache__": true,
+    "**/.pytest_cache": true,
+    "**/*.pyc": true,
+    "**/.next": true,
+    "**/dist": true,
+    "**/out": true,
+    "**/.turbo": true
+  },
+
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/target": true,
+    "**/.foundry": true,
+    "**/out": true,
+    "**/cache": true,
+    "**/.next": true,
+    "**/ai-model/.venv": true
+  },
+
+  "files.watcherExclude": {
+    "**/target/**": true,
+    "**/node_modules/**": true,
+    "**/.foundry/**": true,
+    "**/ai-model/.venv/**": true
+  },
+
+  // ── Solidity (Nomic Foundation) ──────────────
+  "solidity.formatter": "forge",
+  "solidity.packageDefaultDependenciesContractsDirectory": "src",
+  "solidity.packageDefaultDependenciesDirectory": "lib",
+  "solidity.compileUsingRemoteVersion": "v0.8.24",
+  "solidity.enabledAsYouTypeCompilationErrorCheck": true,
+  "solidity.validationDelay": 1500,
+  "solidity.monoRepoSupport": true,
+  "solidity.nodemodulespackage": "solc",
+
+  // ── Noir ─────────────────────────────────────
+  "noir.nargoPath": "${env:HOME}/.nargo/bin/nargo",
+  "noir.enableLSP": true,
+
+  // ── Rust Analyzer ────────────────────────────
+  "rust-analyzer.checkOnSave": true,
+  "rust-analyzer.check.command": "clippy",
+  "rust-analyzer.check.extraArgs": ["--", "-W", "clippy::all"],
+  "rust-analyzer.cargo.features": "all",
+  "rust-analyzer.inlayHints.parameterHints.enable": true,
+  "rust-analyzer.inlayHints.typeHints.enable": true,
+  "rust-analyzer.inlayHints.chainingHints.enable": true,
+  "rust-analyzer.procMacro.enable": true,
+
+  // ── Python / EZKL ────────────────────────────
+  "python.defaultInterpreterPath": "${workspaceFolder}/ai-model/.venv/bin/python",
+  "python.terminal.activateEnvironment": true,
+  "python.analysis.typeCheckingMode": "basic",
+  "python.analysis.autoImportCompletions": true,
+  "python.linting.enabled": true,
+  "python.linting.flake8Enabled": true,
+  "jupyter.notebookFileRoot": "${workspaceFolder}/ai-model",
+
+  // ── TypeScript / Frontend ────────────────────
+  "typescript.tsdk": "frontend/node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "typescript.inlayHints.parameterNames.enabled": "all",
+  "typescript.inlayHints.functionLikeReturnTypes.enabled": true,
+  "typescript.suggest.autoImports": true,
+  "javascript.suggest.autoImports": true,
+
+  // ── ESLint ───────────────────────────────────
+  "eslint.workingDirectories": ["./frontend"],
+  "eslint.validate": ["javascript", "typescript", "typescriptreact"],
+
+  // ── Tailwind CSS ─────────────────────────────
+  "tailwindCSS.rootFontSize": 16,
+  "tailwindCSS.includeLanguages": {
+    "typescript": "html",
+    "typescriptreact": "html"
+  },
+  "tailwindCSS.experimental.classRegex": [
+    ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
+    ["cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
+  ],
+
+  // ── GraphQL ──────────────────────────────────
+  "graphql-config.filepath": "${workspaceFolder}/subgraph/.graphqlrc.yml",
+
+  // ── Docker ───────────────────────────────────
+  "docker.host": "unix:///var/run/docker.sock",
+  "docker.defaultContext": "default",
+
+  // ── Git ──────────────────────────────────────
+  "git.enableSmartCommit": true,
+  "git.confirmSync": false,
+  "git.autofetch": true,
+  "git.autofetchPeriod": 180,
+  "gitlens.codeLens.enabled": true,
+  "gitlens.hovers.currentLine.over": "line",
+
+  // ── Terminal ─────────────────────────────────
+  "terminal.integrated.defaultProfile.linux": "bash",
+  "terminal.integrated.fontSize": 13,
+  "terminal.integrated.scrollback": 5000,
+  "terminal.integrated.env.linux": {
+    "FOUNDRY_PROFILE": "default",
+    "AXIOM_ENV": "development"
+  },
+
+  // ── Explorer ─────────────────────────────────
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.patterns": {
+    "foundry.toml": "remappings.txt, .env*, .solhint*",
+    "Nargo.toml": "Prover.toml, Verifier.toml",
+    "Cargo.toml": "Cargo.lock",
+    "package.json": "bun.lockb, .eslintrc*, .prettierrc*, tsconfig*, next.config*",
+    "docker-compose.yml": "docker-compose.*.yml, Dockerfile*",
+    ".env.example": ".env, .env.*"
+  },
+  "explorer.sortOrder": "foldersNestsFiles",
+  "explorer.compactFolders": false,
+
+  // ── Spell Check ──────────────────────────────
+  "cSpell.words": [
+    "Axiom", "axiom", "nargo", "noir", "ezkl", "poseidon",
+    "wagmi", "viem", "rainbowkit", "latticexyz", "eigenlayer",
+    "layerzero", "chainlink", "biconomy", "pimlico",
+    "foundry", "solidity", "hardhat", "anvil", "chisel",
+    "uint256", "bytes32", "IERC", "reentrancy", "calldata",
+    "onnx", "onnxruntime", "evm", "solc", "abigen",
+    "tokenbound", "multicall", "paymaster", "bundler"
+  ]
+}

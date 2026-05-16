@@ -1,0 +1,369 @@
+{
+  // ─────────────────────────────────────────────
+  //  AXIOM — VS Code Tasks
+  //  Run via: Terminal → Run Task
+  //  Or bind keyboard shortcuts in keybindings.json
+  // ─────────────────────────────────────────────
+  "version": "2.0.0",
+  "tasks": [
+
+    // ════════════════════════════════════════════
+    //  CONTRACTS — Foundry
+    // ════════════════════════════════════════════
+
+    {
+      "label": "forge: build",
+      "type": "shell",
+      "command": "forge build",
+      "options": { "cwd": "${workspaceFolder}/contracts" },
+      "group": { "kind": "build", "isDefault": true },
+      "presentation": { "group": "contracts", "reveal": "always" },
+      "problemMatcher": {
+        "owner": "solidity",
+        "fileLocation": ["relative", "${workspaceFolder}/contracts"],
+        "pattern": {
+          "regexp": "^(.+):(\\d+):(\\d+):\\s+(error|warning):\\s+(.+)$",
+          "file": 1, "line": 2, "column": 3, "severity": 4, "message": 5
+        }
+      }
+    },
+
+    {
+      "label": "forge: test (all)",
+      "type": "shell",
+      "command": "forge test --verbosity 3 --gas-report 2>&1 | tee .foundry/test-report.txt",
+      "options": { "cwd": "${workspaceFolder}/contracts" },
+      "group": { "kind": "test", "isDefault": true },
+      "presentation": { "group": "contracts", "reveal": "always" }
+    },
+
+    {
+      "label": "forge: test (fuzz only)",
+      "type": "shell",
+      "command": "forge test --match-path 'test/fuzz/**' --verbosity 4 --fuzz-runs 10000",
+      "options": { "cwd": "${workspaceFolder}/contracts" },
+      "group": "test",
+      "presentation": { "group": "contracts", "reveal": "always" }
+    },
+
+    {
+      "label": "forge: coverage",
+      "type": "shell",
+      "command": "forge coverage --report lcov && genhtml lcov.info -o coverage-report",
+      "options": { "cwd": "${workspaceFolder}/contracts" },
+      "group": "test",
+      "presentation": { "group": "contracts", "reveal": "always" }
+    },
+
+    {
+      "label": "forge: snapshot (gas)",
+      "type": "shell",
+      "command": "forge snapshot",
+      "options": { "cwd": "${workspaceFolder}/contracts" },
+      "group": "test",
+      "presentation": { "group": "contracts" }
+    },
+
+    {
+      "label": "forge: fmt",
+      "type": "shell",
+      "command": "forge fmt",
+      "options": { "cwd": "${workspaceFolder}/contracts" },
+      "presentation": { "group": "contracts" }
+    },
+
+    {
+      "label": "anvil: start local node",
+      "type": "shell",
+      "command": "anvil --chain-id 31337 --block-time 1 --accounts 10 --balance 10000 --gas-limit 30000000",
+      "options": { "cwd": "${workspaceFolder}/contracts" },
+      "isBackground": true,
+      "presentation": { "group": "nodes", "reveal": "always", "panel": "dedicated" },
+      "problemMatcher": {
+        "pattern": { "regexp": "^$" },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^anvil",
+          "endsPattern": "Listening on"
+        }
+      }
+    },
+
+    {
+      "label": "forge: deploy (local anvil)",
+      "type": "shell",
+      "command": "forge script script/DeployL3.s.sol --rpc-url http://127.0.0.1:8545 --private-key $DEPLOYER_PRIVATE_KEY --broadcast -vvvv",
+      "options": { "cwd": "${workspaceFolder}/contracts" },
+      "dependsOn": ["anvil: start local node"],
+      "presentation": { "group": "contracts", "reveal": "always" }
+    },
+
+    {
+      "label": "slither: security analysis",
+      "type": "shell",
+      "command": "slither . --config-file slither.config.json 2>&1 | tee .foundry/slither-report.txt",
+      "options": { "cwd": "${workspaceFolder}/contracts" },
+      "presentation": { "group": "contracts", "reveal": "always" }
+    },
+
+    // ════════════════════════════════════════════
+    //  ZK CIRCUITS — Noir / Nargo
+    // ════════════════════════════════════════════
+
+    {
+      "label": "nargo: check (fog_of_war)",
+      "type": "shell",
+      "command": "nargo check",
+      "options": { "cwd": "${workspaceFolder}/circuits/fog_of_war" },
+      "group": "build",
+      "presentation": { "group": "zk", "reveal": "always" }
+    },
+
+    {
+      "label": "nargo: prove (fog_of_war)",
+      "type": "shell",
+      "command": "nargo prove",
+      "options": { "cwd": "${workspaceFolder}/circuits/fog_of_war" },
+      "group": "test",
+      "presentation": { "group": "zk", "reveal": "always" }
+    },
+
+    {
+      "label": "nargo: verify (fog_of_war)",
+      "type": "shell",
+      "command": "nargo verify",
+      "options": { "cwd": "${workspaceFolder}/circuits/fog_of_war" },
+      "group": "test",
+      "presentation": { "group": "zk" }
+    },
+
+    {
+      "label": "nargo: test (all circuits)",
+      "type": "shell",
+      "command": "for d in fog_of_war territory_claim; do echo \"\\n▶ $d\"; cd $d && nargo test && cd ..; done",
+      "options": { "cwd": "${workspaceFolder}/circuits" },
+      "group": "test",
+      "presentation": { "group": "zk", "reveal": "always" }
+    },
+
+    {
+      "label": "nargo: codegen-verifier (all)",
+      "type": "shell",
+      "command": "for d in fog_of_war territory_claim; do cd $d && nargo codegen-verifier && cp -f contract/plonk_vk.sol ../../contracts/src/zk/${d^}Verifier.sol && cd ..; done",
+      "options": { "cwd": "${workspaceFolder}/circuits" },
+      "presentation": { "group": "zk", "reveal": "always" }
+    },
+
+    // ════════════════════════════════════════════
+    //  AVS OPERATOR — Rust
+    // ════════════════════════════════════════════
+
+    {
+      "label": "cargo-build-avs",
+      "type": "shell",
+      "command": "cargo build",
+      "options": { "cwd": "${workspaceFolder}/avs-operator" },
+      "group": { "kind": "build" },
+      "presentation": { "group": "avs" }
+    },
+
+    {
+      "label": "cargo: build (release)",
+      "type": "shell",
+      "command": "cargo build --release",
+      "options": { "cwd": "${workspaceFolder}/avs-operator" },
+      "group": "build",
+      "presentation": { "group": "avs", "reveal": "always" }
+    },
+
+    {
+      "label": "cargo: test",
+      "type": "shell",
+      "command": "cargo test -- --nocapture",
+      "options": { "cwd": "${workspaceFolder}/avs-operator" },
+      "group": "test",
+      "presentation": { "group": "avs", "reveal": "always" }
+    },
+
+    {
+      "label": "cargo: clippy (lint)",
+      "type": "shell",
+      "command": "cargo clippy -- -W clippy::all -D warnings",
+      "options": { "cwd": "${workspaceFolder}/avs-operator" },
+      "group": "test",
+      "presentation": { "group": "avs" }
+    },
+
+    {
+      "label": "cargo: watch (auto rebuild)",
+      "type": "shell",
+      "command": "cargo watch -x 'run -- --env development'",
+      "options": {
+        "cwd": "${workspaceFolder}/avs-operator",
+        "env": { "RUST_LOG": "debug", "RUST_BACKTRACE": "1" }
+      },
+      "isBackground": true,
+      "presentation": { "group": "avs", "reveal": "always", "panel": "dedicated" }
+    },
+
+    // ════════════════════════════════════════════
+    //  AI MODEL — Python / EZKL
+    // ════════════════════════════════════════════
+
+    {
+      "label": "python: train faction model",
+      "type": "shell",
+      "command": "source .venv/bin/activate && python train.py --epochs 50",
+      "options": { "cwd": "${workspaceFolder}/ai-model" },
+      "group": "build",
+      "presentation": { "group": "ai", "reveal": "always" }
+    },
+
+    {
+      "label": "python: export to ONNX",
+      "type": "shell",
+      "command": "source .venv/bin/activate && python export.py",
+      "options": { "cwd": "${workspaceFolder}/ai-model" },
+      "group": "build",
+      "presentation": { "group": "ai" }
+    },
+
+    {
+      "label": "ezkl: compile full pipeline",
+      "type": "shell",
+      "command": "source .venv/bin/activate && python ezkl_compile.py --model model.onnx --output-dir ../circuits/ai_inference",
+      "options": { "cwd": "${workspaceFolder}/ai-model" },
+      "group": "build",
+      "presentation": { "group": "ai", "reveal": "always" }
+    },
+
+    // ════════════════════════════════════════════
+    //  FRONTEND — Next.js / Bun
+    // ════════════════════════════════════════════
+
+    {
+      "label": "bun: install",
+      "type": "shell",
+      "command": "bun install",
+      "options": { "cwd": "${workspaceFolder}/frontend" },
+      "group": "build",
+      "presentation": { "group": "frontend" }
+    },
+
+    {
+      "label": "bun: dev",
+      "type": "shell",
+      "command": "bun run dev",
+      "options": { "cwd": "${workspaceFolder}/frontend" },
+      "isBackground": true,
+      "presentation": { "group": "frontend", "reveal": "always", "panel": "dedicated" },
+      "problemMatcher": {
+        "pattern": { "regexp": "^$" },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "next dev",
+          "endsPattern": "Ready in"
+        }
+      }
+    },
+
+    {
+      "label": "bun: build",
+      "type": "shell",
+      "command": "bun run build",
+      "options": { "cwd": "${workspaceFolder}/frontend" },
+      "group": { "kind": "build" },
+      "presentation": { "group": "frontend", "reveal": "always" }
+    },
+
+    {
+      "label": "bun: lint",
+      "type": "shell",
+      "command": "bun run lint",
+      "options": { "cwd": "${workspaceFolder}/frontend" },
+      "group": "test",
+      "presentation": { "group": "frontend" }
+    },
+
+    // ════════════════════════════════════════════
+    //  SUBGRAPH — The Graph
+    // ════════════════════════════════════════════
+
+    {
+      "label": "graph: codegen",
+      "type": "shell",
+      "command": "graph codegen",
+      "options": { "cwd": "${workspaceFolder}/subgraph" },
+      "group": "build",
+      "presentation": { "group": "subgraph" }
+    },
+
+    {
+      "label": "graph: build",
+      "type": "shell",
+      "command": "graph build",
+      "options": { "cwd": "${workspaceFolder}/subgraph" },
+      "group": "build",
+      "presentation": { "group": "subgraph", "reveal": "always" }
+    },
+
+    {
+      "label": "graph: deploy (local)",
+      "type": "shell",
+      "command": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 axiom/axiom-world",
+      "options": { "cwd": "${workspaceFolder}/subgraph" },
+      "presentation": { "group": "subgraph", "reveal": "always" }
+    },
+
+    // ════════════════════════════════════════════
+    //  DOCKER — Full Dev Stack
+    // ════════════════════════════════════════════
+
+    {
+      "label": "docker: up (full stack)",
+      "type": "shell",
+      "command": "docker compose up --build",
+      "options": { "cwd": "${workspaceFolder}" },
+      "isBackground": true,
+      "presentation": {
+        "group": "docker",
+        "reveal": "always",
+        "panel": "dedicated",
+        "label": "Docker Stack"
+      }
+    },
+
+    {
+      "label": "docker: down",
+      "type": "shell",
+      "command": "docker compose down -v",
+      "options": { "cwd": "${workspaceFolder}" },
+      "presentation": { "group": "docker" }
+    },
+
+    {
+      "label": "docker: logs (l3-node)",
+      "type": "shell",
+      "command": "docker compose logs -f l3-node",
+      "options": { "cwd": "${workspaceFolder}" },
+      "isBackground": true,
+      "presentation": { "group": "docker", "panel": "dedicated", "label": "L3 Logs" }
+    },
+
+    // ════════════════════════════════════════════
+    //  COMPOUND — Run everything at once
+    // ════════════════════════════════════════════
+
+    {
+      "label": "AXIOM: dev (full local stack)",
+      "dependsOn": [
+        "anvil: start local node",
+        "bun: dev",
+        "cargo: watch (auto rebuild)"
+      ],
+      "dependsOrder": "sequence",
+      "group": "build",
+      "presentation": { "reveal": "always" }
+    }
+  ]
+}

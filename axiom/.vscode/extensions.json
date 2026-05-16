@@ -1,0 +1,62 @@
+{
+  // ─────────────────────────────────────────────
+  //  AXIOM — Recommended VS Code Extensions
+  //  VS Code prompts teammates to install these
+  //  automatically when they open the workspace.
+  // ─────────────────────────────────────────────
+  "recommendations": [
+
+    // ── Solidity + Foundry ────────────────────
+    "NomicFoundation.hardhat-solidity",       // Solidity LSP — autocomplete, errors, go-to-def
+    "tintinweb.solidity-visual-auditor",      // Security auditing — highlights reentrancy, access control issues
+    "ackeeblockchain.tools-for-solidity",     // Gas profiler + call graph for Foundry
+
+    // ── ZK / Noir ─────────────────────────────
+    "noir-lang.vscode-noir",                  // Official Noir LSP — .nr syntax, errors, formatter
+
+    // ── Rust (AVS Operator) ───────────────────
+    "rust-lang.rust-analyzer",                // Rust LSP — completions, inlay hints, inline errors
+    "vadimcn.vscode-lldb",                    // Native debugger for Rust — breakpoints in AVS code
+    "serayuzgur.crates",                      // Inline crate version hints in Cargo.toml
+
+    // ── Python / EZKL / AI ────────────────────
+    "ms-python.python",                       // Python LSP — IntelliSense, linting, debugger
+    "ms-python.debugpy",                      // Python debugger (required for launch.json configs)
+    "ms-toolsai.jupyter",                     // Jupyter notebooks inside VS Code — replaces Colab
+    "ms-toolsai.vscode-jupyter-slideshow",    // Present Jupyter notebooks as slides
+
+    // ── Frontend (Next.js + Web3) ─────────────
+    "ms-vscode.vscode-typescript-next",       // Latest TypeScript server — critical for wagmi v2 types
+    "bradlc.vscode-tailwindcss",              // Tailwind IntelliSense — class autocomplete + hover preview
+    "GraphQL.vscode-graphql",                 // GraphQL schema validation + autocomplete for subgraph
+    "GraphQL.vscode-graphql-syntax",          // GraphQL syntax highlighting in .graphql files
+    "ms-playwright.playwright",               // E2E testing — wallet flow automation
+
+    // ── DevOps + Infrastructure ───────────────
+    "ms-azuretools.vscode-docker",            // Docker Desktop integration — manage L3 + AVS containers
+    "ms-vscode-remote.remote-wsl",            // Remote WSL — open project inside Ubuntu (REQUIRED on Windows)
+    "ms-vscode-remote.remote-containers",     // Dev Containers — one-click reproducible environment
+
+    // ── General + Productivity ────────────────
+    "tamasfe.even-better-toml",               // TOML support — Nargo.toml, foundry.toml, Cargo.toml
+    "esbenp.prettier-vscode",                 // Auto-formatter for JS/TS/JSON/YAML/MD
+    "dbaeumer.vscode-eslint",                 // ESLint integration — catches wagmi/viem type misuse
+    "eamodio.gitlens",                        // Git blame, history, PR reviews inline
+    "mhutchie.git-graph",                     // Visual git branch graph
+    "rangav.vscode-thunder-client",           // REST client — test metadata API + AVS endpoints
+    "streetsidesoftware.code-spell-checker",  // Spell check — catches typos in comments + docs
+    "usernamehw.errorlens",                   // Shows errors inline at end of line — no more hovering
+    "yzhang.markdown-all-in-one",             // Markdown preview + shortcuts for README editing
+    "mechatroner.rainbow-csv",                // Color-coded CSV — useful for game data imports
+    "christian-kohler.path-intellisense",     // Autocomplete file paths in imports
+    "formulahendry.auto-rename-tag",          // Auto rename matching JSX tags
+    "wix.vscode-import-cost"                  // Shows import size inline — keep frontend bundle lean
+  ],
+
+  // ── Extensions to avoid (conflicting) ────────
+  "unwantedRecommendations": [
+    "JuanBlanco.solidity",                    // Conflicts with NomicFoundation.hardhat-solidity
+    "ms-vscode.vscode-js-profile-flame",      // Conflicts with Rust profiler
+    "hookyqr.beautify"                        // Conflicts with prettier
+  ]
+}

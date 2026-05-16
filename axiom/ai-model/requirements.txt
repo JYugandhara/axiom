@@ -1,0 +1,40 @@
+# ─────────────────────────────────────────────────────────
+#  AXIOM — AI Model Python Dependencies
+#  Install inside WSL venv:
+#    python -m venv .venv
+#    source .venv/bin/activate
+#    pip install -r requirements.txt
+# ─────────────────────────────────────────────────────────
+
+# ── Core ML ──────────────────────────────────────────────
+torch==2.2.0                  # PyTorch — model training
+torchvision==0.17.0           # Vision utilities (optional, for game map processing)
+numpy==1.26.4                 # Array math
+scikit-learn==1.4.0           # Train/val split, metrics
+
+# ── ONNX Export ──────────────────────────────────────────
+onnx==1.15.0                  # ONNX format — bridge between PyTorch and EZKL
+onnxruntime==1.17.0           # Run inference on .onnx model locally to validate
+onnxsim==0.4.35               # Simplify ONNX graph before ZK compilation
+
+# ── EZKL — ZK Circuit Compiler ───────────────────────────
+ezkl==9.1.0                   # Core EZKL — compiles ONNX → ZK circuit + Solidity verifier
+
+# ── Data & Utilities ─────────────────────────────────────
+pandas==2.2.0                 # Game state dataset handling
+matplotlib==3.8.2             # Plot training loss curves
+seaborn==0.13.2               # Heatmaps for strategy analysis
+tqdm==4.66.1                  # Progress bars for training loops
+pyyaml==6.0.1                 # Load game config YAML files
+python-dotenv==1.0.0          # Load .env for RPC URLs
+
+# ── Jupyter ───────────────────────────────────────────────
+jupyter==1.0.0                # Notebook server
+ipykernel==6.29.2             # VS Code Jupyter kernel
+ipywidgets==8.1.2             # Interactive widgets in notebooks
+
+# ── Dev / Testing ────────────────────────────────────────
+pytest==8.0.2                 # Unit tests for model logic
+black==24.2.0                 # Code formatter
+flake8==7.0.0                 # Linter
+mypy==1.8.0                   # Type checking

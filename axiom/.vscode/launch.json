@@ -1,0 +1,207 @@
+{
+  // ─────────────────────────────────────────────
+  //  AXIOM — VS Code Debug Launch Configurations
+  //  F5 to launch | Ctrl+F5 to run without debug
+  // ─────────────────────────────────────────────
+  "version": "0.2.0",
+  "configurations": [
+
+    // ── Frontend: Next.js ─────────────────────
+    {
+      "name": "🌍 Frontend — Next.js Dev Server",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/frontend",
+      "runtimeExecutable": "bun",
+      "runtimeArgs": ["run", "dev"],
+      "serverReadyAction": {
+        "pattern": "ready started server on .+, url: (https?://.+)",
+        "uriFormat": "%s",
+        "action": "openExternally"
+      },
+      "env": {
+        "NODE_ENV": "development"
+      },
+      "skipFiles": ["<node_internals>/**"],
+      "console": "integratedTerminal"
+    },
+
+    // ── Contracts: Foundry Tests ──────────────
+    {
+      "name": "🧪 Contracts — Forge Test (all)",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/contracts",
+      "runtimeExecutable": "forge",
+      "runtimeArgs": [
+        "test",
+        "--verbosity", "3",
+        "--gas-report"
+      ],
+      "console": "integratedTerminal",
+      "skipFiles": ["<node_internals>/**"]
+    },
+
+    // ── Contracts: Forge Test (single file) ───
+    {
+      "name": "🧪 Contracts — Forge Test (active file)",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/contracts",
+      "runtimeExecutable": "forge",
+      "runtimeArgs": [
+        "test",
+        "--match-path", "${relativeFile}",
+        "--verbosity", "4"
+      ],
+      "console": "integratedTerminal"
+    },
+
+    // ── Contracts: Anvil Local Node ───────────
+    {
+      "name": "⛓️ Contracts — Anvil Local Node",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/contracts",
+      "runtimeExecutable": "anvil",
+      "runtimeArgs": [
+        "--chain-id", "31337",
+        "--block-time", "1",
+        "--accounts", "10",
+        "--balance", "10000",
+        "--gas-price", "1",
+        "--gas-limit", "30000000"
+      ],
+      "console": "integratedTerminal"
+    },
+
+    // ── Circuits: Nargo Prove (fog_of_war) ────
+    {
+      "name": "🔐 ZK — Nargo Prove fog_of_war",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/circuits/fog_of_war",
+      "runtimeExecutable": "nargo",
+      "runtimeArgs": ["prove"],
+      "console": "integratedTerminal"
+    },
+
+    // ── Circuits: Nargo Test (all circuits) ───
+    {
+      "name": "🔐 ZK — Nargo Test (all circuits)",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/circuits",
+      "runtimeExecutable": "bash",
+      "runtimeArgs": [
+        "-c",
+        "for d in fog_of_war territory_claim; do echo \"▶ Testing $d\"; cd $d && nargo test && cd ..; done"
+      ],
+      "console": "integratedTerminal"
+    },
+
+    // ── AVS Operator: Rust (debug mode) ───────
+    {
+      "name": "⚡ AVS — Operator Node (debug)",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/avs-operator/target/debug/avs-operator",
+      "args": ["--env", "development"],
+      "cwd": "${workspaceFolder}/avs-operator",
+      "env": {
+        "RUST_LOG": "debug",
+        "RUST_BACKTRACE": "1",
+        "RPC_URL": "http://127.0.0.1:8545",
+        "AXIOM_ENV": "development"
+      },
+      "sourceLanguages": ["rust"],
+      "preLaunchTask": "cargo-build-avs"
+    },
+
+    // ── AVS Operator: Rust (watch + rebuild) ──
+    {
+      "name": "⚡ AVS — Operator Node (watch)",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/avs-operator",
+      "runtimeExecutable": "cargo",
+      "runtimeArgs": ["watch", "-x", "run -- --env development"],
+      "env": {
+        "RUST_LOG": "info",
+        "AXIOM_ENV": "development"
+      },
+      "console": "integratedTerminal"
+    },
+
+    // ── AI Model: Python train.py ─────────────
+    {
+      "name": "🧠 AI — Train faction model",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/ai-model/train.py",
+      "cwd": "${workspaceFolder}/ai-model",
+      "python": "${workspaceFolder}/ai-model/.venv/bin/python",
+      "args": ["--epochs", "10", "--output", "faction_model.pt"],
+      "console": "integratedTerminal",
+      "justMyCode": true
+    },
+
+    // ── AI Model: EZKL compile pipeline ───────
+    {
+      "name": "🧠 AI — EZKL compile to ZK circuit",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/ai-model/ezkl_compile.py",
+      "cwd": "${workspaceFolder}/ai-model",
+      "python": "${workspaceFolder}/ai-model/.venv/bin/python",
+      "args": ["--model", "model.onnx", "--output-dir", "../circuits/ai_inference"],
+      "console": "integratedTerminal",
+      "justMyCode": false
+    },
+
+    // ── Subgraph: Graph Node (local) ──────────
+    {
+      "name": "📊 Subgraph — Deploy to local Graph node",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/subgraph",
+      "runtimeExecutable": "graph",
+      "runtimeArgs": [
+        "deploy",
+        "--node", "http://localhost:8020/",
+        "--ipfs", "http://localhost:5001",
+        "axiom/axiom-world"
+      ],
+      "console": "integratedTerminal"
+    }
+  ],
+
+  // ── Compound: Full Dev Stack ──────────────────
+  "compounds": [
+    {
+      "name": "🚀 AXIOM — Full Dev Stack",
+      "configurations": [
+        "⛓️ Contracts — Anvil Local Node",
+        "🌍 Frontend — Next.js Dev Server"
+      ],
+      "stopAll": true,
+      "presentation": {
+        "hidden": false,
+        "group": "stack",
+        "order": 1
+      }
+    },
+    {
+      "name": "🔐 AXIOM — ZK + Contracts",
+      "configurations": [
+        "🔐 ZK — Nargo Test (all circuits)",
+        "🧪 Contracts — Forge Test (all)"
+      ],
+      "stopAll": true,
+      "presentation": {
+        "group": "test",
+        "order": 2
+      }
+    }
+  ]
+}
