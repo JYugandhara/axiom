@@ -1,0 +1,17 @@
+# ─────────────────────────────────────────────────────────────
+#  AXIOM — Territory Claim ZK Circuit
+#
+#  Proves a civilization owns a specific tile and that tile
+#  is adjacent to an already-owned tile — without revealing
+#  which tile is being claimed until the proof is submitted.
+#
+#  Used by ClaimSystem.sol on the L3 MUD world.
+# ─────────────────────────────────────────────────────────────
+
+[package]
+name             = "territory_claim"
+type             = "bin"
+authors          = ["AXIOM Team"]
+compiler_version = ">=0.33.0"
+
+[dependencies]

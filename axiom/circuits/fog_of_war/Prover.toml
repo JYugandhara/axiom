@@ -1,0 +1,64 @@
+# ─────────────────────────────────────────────────────────────
+#  AXIOM Fog of War — Prover.toml
+#  Sample witness: player at (100, 200) moves east to (101, 200)
+#
+#  HOW TO GENERATE YOUR OWN VALUES:
+#  ─────────────────────────────────
+#  1. Choose your from_x, from_y, to_x, to_y, player_secret
+#  2. Run:  nargo execute   (computes the witness from these inputs)
+#     OR:  use the JS helper in frontend/lib/noir/compute_witness.ts
+#     OR:  run compute_witness.sh in this directory
+#
+#  COORDINATE ENCODING:
+#  ─────────────────────
+#  All coordinates are offset by 1_000_000 so they stay positive.
+#  World tile (x, y) → field element (x + 1_000_000, y + 1_000_000)
+#  Tile (100, 200)   → (1000100, 1000200)
+#  Tile (-50, -30)   → (999950,  999970)
+#
+#  COMMITMENT VALUES:
+#  ───────────────────
+#  Computed by: Poseidon2([from_x, from_y, player_secret], 3)
+#  Replace the placeholder values below with your computed commitments.
+#  The placeholder strings below are NOT valid — nargo will reject them.
+#  Run `nargo execute` after filling in the coordinate and secret fields.
+# ─────────────────────────────────────────────────────────────
+
+# ── Private inputs ────────────────────────────────────────────
+# Source tile: world coordinate (100, 200)
+from_x = "1000100"
+from_y = "1000200"
+
+# Destination tile: world coordinate (101, 200) — move 1 east
+to_x = "1000101"
+to_y = "1000200"
+
+# Player secret — generate with: node -e "console.log(require('crypto').randomBytes(31).toString('hex'))"
+# Keep this PRIVATE. Never share or commit to git.
+player_secret = "99999"
+
+# Movement delta magnitudes (unsigned)
+dx_magnitude = "1"   # |to_x - from_x| = 1
+dy_magnitude = "0"   # |to_y - from_y| = 0
+
+# Movement directions (true = positive / increasing coordinate)
+dx_positive = true   # moving east = positive X
+dy_positive = true   # irrelevant when dy = 0, but must be set
+
+# ── Public inputs ─────────────────────────────────────────────
+# from_commitment = Poseidon2(from_x=1000100, from_y=1000200, secret=99999)
+# REPLACE with actual computed value — run `nargo execute` to get it
+from_commitment = "0x0000000000000000000000000000000000000000000000000000000000000000"
+
+# to_commitment = Poseidon2(to_x=1000101, to_y=1000200, secret=99999)
+# REPLACE with actual computed value
+to_commitment = "0x0000000000000000000000000000000000000000000000000000000000000001"
+
+# Maximum tiles this civilization can move (from CivilizationState)
+movement_range = "5"
+
+# Anti-replay nonce — read from MUD CivilizationState.move_nonce on-chain
+nonce = "1"
+
+# Current game season
+season = "1"

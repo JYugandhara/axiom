@@ -1,0 +1,20 @@
+# ─────────────────────────────────────────────────────────────
+#  AXIOM Circuits — Noir Workspace
+#
+#  All ZK circuits in one workspace so they share the same
+#  compiler version and can cross-reference utilities.
+#
+#  Commands (run from circuits/ directory):
+#    nargo check              — type-check all circuits
+#    nargo test               — run all #[test] blocks
+#    nargo compile            — compile all circuits to ACIR
+#    cd fog_of_war && nargo prove   — generate a proof
+#    cd fog_of_war && nargo verify  — verify a proof
+#    cd fog_of_war && nargo codegen-verifier  — export Solidity verifier
+# ─────────────────────────────────────────────────────────────
+
+[workspace]
+members = [
+    "fog_of_war",
+    "territory_claim",
+]

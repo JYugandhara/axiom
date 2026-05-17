@@ -1,0 +1,18 @@
+# ─────────────────────────────────────────────────────────────
+#  AXIOM — Fog of War ZK Circuit
+#
+#  Proves a civilization moved from tile A to tile B without
+#  revealing the actual coordinates to any other player.
+#
+#  The circuit uses Poseidon2 hashing to commit to positions.
+#  Only the player who knows `player_secret` can open the commitment.
+# ─────────────────────────────────────────────────────────────
+
+[package]
+name             = "fog_of_war"
+type             = "bin"
+authors          = ["AXIOM Team"]
+compiler_version = ">=0.33.0"
+
+[dependencies]
+# No external deps — uses Noir stdlib only

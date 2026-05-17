@@ -1,0 +1,66 @@
+# ─────────────────────────────────────────────────────────────
+#  AXIOM Territory Claim — Prover.toml
+#  Sample witness: Civ #42 owns (50, 50) and claims (50, 51)
+#
+#  FILL IN BEFORE PROVING:
+#  ────────────────────────
+#  1. Set claim_x, claim_y (tile you want to claim)
+#  2. Set anchor_x, anchor_y (tile you already own, adjacent)
+#  3. Set civ_secret (your civilization's private salt)
+#  4. Set civ_id (your on-chain civilization NFT token ID)
+#  5. Run: nargo execute   →  computes the commitment values
+#  6. Copy the commitment outputs into this file
+#  7. Run: nargo prove
+#
+#  COORDINATE ENCODING:
+#  ─────────────────────
+#  All coordinates = actual_world_coord + 1_000_000
+#  Tile (50, 50) → field element (1000050, 1000050)
+# ─────────────────────────────────────────────────────────────
+
+# ── Private inputs ────────────────────────────────────────────
+
+# Tile being claimed: world coordinate (50, 51)
+claim_x  = "1000050"
+claim_y  = "1000051"
+
+# Anchor tile (already owned): world coordinate (50, 50)
+anchor_x = "1000050"
+anchor_y = "1000050"
+
+# Civilization secret — keep private, never share
+civ_secret = "888888"
+
+# dx_magnitude = |claim_x - anchor_x| = 0
+dx_magnitude = "0"
+# dy_magnitude = |claim_y - anchor_y| = 1
+dy_magnitude = "1"
+
+# dx_positive: claim_x > anchor_x? No (dx=0, irrelevant, set true)
+dx_positive = true
+# dy_positive: claim_y > anchor_y? Yes (+1 north)
+dy_positive = true
+
+# ── Public inputs ─────────────────────────────────────────────
+
+# claim_commitment = Poseidon2(claim_x=1000050, claim_y=1000051, civ_secret=888888)
+# REPLACE with actual value from `nargo execute`
+claim_commitment = "0x0000000000000000000000000000000000000000000000000000000000000000"
+
+# anchor_commitment = Poseidon2(anchor_x=1000050, anchor_y=1000050, civ_secret=888888)
+# This must already be stored in TerritoryMap.sol for your civ_id
+# REPLACE with actual value from `nargo execute`
+anchor_commitment = "0x0000000000000000000000000000000000000000000000000000000000000001"
+
+# civ_id_hash = Poseidon2(civ_id=42, civ_secret=888888)
+# REPLACE with actual value from `nargo execute`
+civ_id_hash = "0x0000000000000000000000000000000000000000000000000000000000000002"
+
+# Your civilization's on-chain NFT token ID
+civ_id = "42"
+
+# Current game season — read from MUD GameState table
+season = "1"
+
+# Anti-replay nonce — read from CivilizationState.claim_nonce on-chain
+nonce = "1"
