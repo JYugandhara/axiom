@@ -1,0 +1,79 @@
+specVersion: 0.0.5
+schema:
+  file: ./schema.graphql
+
+dataSources:
+  - kind: ethereum
+    name: AxiomWorld
+    network: arbitrum-one  # change to your L3 network name
+    source:
+      address: "0x0000000000000000000000000000000000000000"  # replace after deploy
+      abi: AxiomWorld
+      startBlock: 0
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Civilization
+        - Move
+        - TileClaim
+        - Battle
+        - AgentAction
+        - GlobalStats
+      abis:
+        - name: AxiomWorld
+          file: ./abis/AxiomWorld.json
+        - name: MoveSystem
+          file: ./abis/MoveSystem.json
+        - name: ClaimSystem
+          file: ./abis/ClaimSystem.json
+        - name: BattleHistoryStore
+          file: ./abis/BattleHistoryStore.json
+      eventHandlers:
+        - event: Moved(indexed uint256,bytes32,bytes32,uint64)
+          handler: handleMoved
+        - event: TileClaimed(indexed uint256,bytes32,bytes32)
+          handler: handleTileClaimed
+        - event: BattleRecorded(indexed uint256,indexed uint256,indexed uint256,bool)
+          handler: handleBattleRecorded
+        - event: CivilizationMinted(indexed uint256,indexed address,address)
+          handler: handleCivilizationMinted
+        - event: AgentActionExecuted(indexed uint256,indexed uint256,uint8)
+          handler: handleAgentAction
+        - event: SeasonAdvanced(uint32,uint32)
+          handler: handleSeasonAdvanced
+      file: ./src/mappings/axiomWorld.ts
+
+  - kind: ethereum
+    name: AXMToken
+    network: mainnet
+    source:
+      address: "0x0000000000000000000000000000000000000000"
+      abi: AXMToken
+      startBlock: 0
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - StakingPosition
+        - PredictionMarket
+        - PredictionBet
+      abis:
+        - name: AXMToken
+          file: ./abis/AXMToken.json
+        - name: Staking
+          file: ./abis/Staking.json
+        - name: PredictionMarket
+          file: ./abis/PredictionMarket.json
+      eventHandlers:
+        - event: Staked(indexed address,indexed uint256,uint256,uint256)
+          handler: handleStaked
+        - event: Unstaked(indexed address,indexed uint256,uint256)
+          handler: handleUnstaked
+        - event: BetPlaced(indexed uint256,indexed address,bool,uint256,uint256)
+          handler: handleBetPlaced
+        - event: MarketResolved(indexed uint256,bool)
+          handler: handleMarketResolved
+      file: ./src/mappings/economy.ts

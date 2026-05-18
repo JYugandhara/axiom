@@ -1,0 +1,137 @@
+"""
+AXIOM World — The Graph Subgraph Schema
+Indexes all on-chain game events for leaderboards, history, and analytics.
+"""
+
+type Civilization @entity {
+  id: ID!                         # civId as string
+  owner: Bytes!                   # wallet address
+  name: String!
+  territory: BigInt!
+  energyBalance: BigInt!
+  energyPerBlock: BigInt!
+  agentModelHash: Bytes!
+  isAutonomous: Boolean!
+  season: Int!
+  mintedAtBlock: BigInt!
+  moveCount: BigInt!
+  claimCount: BigInt!
+  battlesWon: BigInt!
+  battlesLost: BigInt!
+  moves: [Move!]! @derivedFrom(field: "civ")
+  claims: [TileClaim!]! @derivedFrom(field: "civ")
+  battlesAsAttacker: [Battle!]! @derivedFrom(field: "attacker")
+  battlesAsDefender: [Battle!]! @derivedFrom(field: "defender")
+  agentActions: [AgentAction!]! @derivedFrom(field: "civ")
+  stakingPositions: [StakingPosition!]! @derivedFrom(field: "owner")
+  predictions: [PredictionBet!]! @derivedFrom(field: "bettor")
+}
+
+type Move @entity {
+  id: ID!                         # txHash-logIndex
+  civ: Civilization!
+  fromCommitment: Bytes!
+  toCommitment: Bytes!
+  nonce: BigInt!
+  blockNumber: BigInt!
+  timestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type TileClaim @entity {
+  id: ID!
+  civ: Civilization!
+  claimCommitment: Bytes!
+  anchorCommitment: Bytes!
+  blockNumber: BigInt!
+  timestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type Battle @entity {
+  id: ID!                         # battleId
+  attacker: Civilization!
+  defender: Civilization!
+  attackerWon: Boolean!
+  territoryTransferred: Int!
+  damageDealt: Int!
+  vrfSeed: Bytes!
+  blockNumber: BigInt!
+  timestamp: BigInt!
+}
+
+type AgentAction @entity {
+  id: ID!                         # taskId
+  civ: Civilization!
+  actionType: Int!
+  actionName: String!
+  executed: Boolean!
+  submittedAtBlock: BigInt!
+  timestamp: BigInt!
+}
+
+type SeasonResult @entity {
+  id: ID!                         # season number
+  winner: Civilization
+  totalBattles: Int!
+  totalMoves: Int!
+  totalClaims: Int!
+  startBlock: BigInt!
+  endBlock: BigInt
+}
+
+type StakingPosition @entity {
+  id: ID!                         # wallet-posId
+  owner: Bytes!
+  amount: BigInt!
+  lockedAt: BigInt!
+  unlockAt: BigInt!
+  multiplierBps: Int!
+  active: Boolean!
+  totalClaimed: BigInt!
+}
+
+type PredictionMarket @entity {
+  id: ID!                         # marketId
+  season: Int!
+  civId: BigInt!
+  yesPool: BigInt!
+  noPool: BigInt!
+  resolved: Boolean!
+  outcome: Boolean
+  closesAtBlock: BigInt!
+  totalBets: Int!
+  bets: [PredictionBet!]! @derivedFrom(field: "market")
+}
+
+type PredictionBet @entity {
+  id: ID!
+  market: PredictionMarket!
+  bettor: Bytes!
+  isYes: Boolean!
+  axmIn: BigInt!
+  shares: BigInt!
+  claimed: Boolean!
+  timestamp: BigInt!
+}
+
+type GlobalStats @entity {
+  id: ID!                         # "global"
+  totalCivilizations: Int!
+  totalMoves: BigInt!
+  totalClaims: BigInt!
+  totalBattles: BigInt!
+  totalEnergyMinted: BigInt!
+  currentSeason: Int!
+  lastUpdatedBlock: BigInt!
+}
+
+type DailySnapshot @entity {
+  id: ID!                         # date string YYYY-MM-DD
+  date: String!
+  dailyMoves: Int!
+  dailyClaims: Int!
+  dailyBattles: Int!
+  dailyEnergyMinted: BigInt!
+  activeCivs: Int!
+}

@@ -1,0 +1,57 @@
+# ─────────────────────────────────────────────────────────────
+#  AXIOM L3 — OP Geth Config (op-geth-config.yaml)
+#  Configures the execution layer (op-geth)
+#  Custom: $AXM as gas token, 500ms block time, EigenDA for DA.
+# ─────────────────────────────────────────────────────────────
+
+# Network
+networkid: 42069               # AXIOM L3 chain ID (choose unique)
+datadir: /data
+
+# HTTP RPC (public — for dApp, AVS operators, The Graph)
+http:
+  enabled: true
+  addr: "0.0.0.0"
+  port: 8545
+  api: ["eth", "net", "web3", "txpool", "debug"]
+  corsdomain: ["*"]
+  vhosts: ["*"]
+
+# WebSocket RPC (for real-time subscriptions)
+ws:
+  enabled: true
+  addr: "0.0.0.0"
+  port: 8546
+  api: ["eth", "net", "web3", "txpool"]
+  origins: ["*"]
+
+# Authenticated Engine API (for op-node only)
+authrpc:
+  addr: "0.0.0.0"
+  port: 8551
+  vhosts: ["localhost", "op-geth"]
+  jwtsecret: /secrets/jwt.hex
+
+# Performance
+cache: 4096                    # 4GB cache
+maxpeers: 50
+syncmode: full
+
+# Mining (block production)
+miner:
+  recommit: 500ms              # 500ms block time (AXIOM target)
+  gasprice: 1                  # 1 wei minimum gas price in $AXM
+
+# Gas token customization
+# $AXM (ERC-20) is used for gas instead of native ETH
+# Configured via the L3 genesis precompile
+
+# Metrics
+metrics:
+  enabled: true
+  addr: "0.0.0.0"
+  port: 6060
+
+log:
+  level: info
+  format: json
