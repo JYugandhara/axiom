@@ -1,0 +1,243 @@
+###############################################################
+#  AXIOM — Local Dev Stack
+#  Spins up all services for local development.
+#
+#  Usage (from axiom/ root in WSL):
+#    docker compose up            # start all
+#    docker compose up l3-node    # just the chain
+#    docker compose down -v       # stop + wipe volumes
+#    docker compose logs -f avs   # follow AVS logs
+###############################################################
+
+version: "3.9"
+
+networks:
+  axiom:
+    driver: bridge
+
+volumes:
+  l3-data:
+  postgres-data:
+  ipfs-data:
+  graph-data:
+
+services:
+
+  # ──────────────────────────────────────────────────────────
+  #  L3 Execution Layer (op-geth — custom chain)
+  # ──────────────────────────────────────────────────────────
+  l3-node:
+    image: us-docker.pkg.dev/oplabs-tools-artifacts/images/op-geth:latest
+    container_name: axiom-l3-node
+    restart: unless-stopped
+    networks: [axiom]
+    ports:
+      - "8545:8545"   # HTTP RPC
+      - "8546:8546"   # WebSocket RPC
+      - "8551:8551"   # Engine API (op-node only)
+      - "6060:6060"   # Metrics
+    volumes:
+      - l3-data:/data
+      - ./l3-chain/genesis.json:/config/genesis.json:ro
+      - ./l3-chain/op-geth-config.yaml:/config/op-geth.yaml:ro
+      - ./secrets:/secrets:ro
+    command:
+      - --config=/config/op-geth.yaml
+      - --genesis=/config/genesis.json
+      - --networkid=42069
+      - --datadir=/data
+      - --http
+      - --http.addr=0.0.0.0
+      - --http.port=8545
+      - --http.api=eth,net,web3,txpool,debug
+      - --http.corsdomain=*
+      - --ws
+      - --ws.addr=0.0.0.0
+      - --ws.port=8546
+      - --ws.api=eth,net,web3,txpool
+      - --authrpc.addr=0.0.0.0
+      - --authrpc.port=8551
+      - --authrpc.vhosts=*
+      - --authrpc.jwtsecret=/secrets/jwt.hex
+      - --syncmode=full
+      - --gcmode=archive
+      - --nodiscover
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8545"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # ──────────────────────────────────────────────────────────
+  #  L3 Consensus Layer (op-node)
+  # ──────────────────────────────────────────────────────────
+  op-node:
+    image: us-docker.pkg.dev/oplabs-tools-artifacts/images/op-node:latest
+    container_name: axiom-op-node
+    restart: unless-stopped
+    networks: [axiom]
+    ports:
+      - "7300:7300"   # Metrics
+      - "9003:9003"   # P2P
+    volumes:
+      - ./l3-chain/op-node-config.yaml:/config/op-node.yaml:ro
+      - ./secrets:/secrets:ro
+    environment:
+      - OP_NODE_L1_ETH_RPC=${L2_RPC_URL}
+      - OP_NODE_L2_ENGINE_AUTH=/secrets/jwt.hex
+      - OP_NODE_L2_ENGINE_RPC=http://l3-node:8551
+      - OP_NODE_ROLLUP_CONFIG=/config/rollup.json
+      - OP_NODE_P2P_DISABLE=true
+      - OP_NODE_SEQUENCER_ENABLED=true
+      - OP_NODE_SEQUENCER_L1_CONFS=4
+    depends_on:
+      l3-node:
+        condition: service_healthy
+
+  # ──────────────────────────────────────────────────────────
+  #  AVS Operator Node (Rust)
+  # ──────────────────────────────────────────────────────────
+  avs-operator:
+    build:
+      context: ./avs-operator
+      dockerfile: Dockerfile
+    container_name: axiom-avs
+    restart: unless-stopped
+    networks: [axiom]
+    ports:
+      - "9090:9090"   # Prometheus metrics
+    volumes:
+      - ./circuits/ai_inference:/home/operator/circuits:ro
+      - ./ai-model:/home/operator/ai-model:ro
+    env_file: ./avs-operator/.env
+    environment:
+      - AXIOM_ENV=development
+      - L3_RPC_URL=ws://l3-node:8546
+      - RUST_LOG=info
+      - DRY_RUN=false
+    depends_on:
+      l3-node:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9090/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # ──────────────────────────────────────────────────────────
+  #  PostgreSQL (The Graph node database)
+  # ──────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: axiom-postgres
+    restart: unless-stopped
+    networks: [axiom]
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=graph
+      - POSTGRES_PASSWORD=graph
+      - POSTGRES_DB=graph
+      - POSTGRES_INITDB_ARGS=--encoding=UTF-8 --locale=C
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U graph"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # ──────────────────────────────────────────────────────────
+  #  IPFS (The Graph + NFT metadata)
+  # ──────────────────────────────────────────────────────────
+  ipfs:
+    image: ipfs/go-ipfs:v0.24.0
+    container_name: axiom-ipfs
+    restart: unless-stopped
+    networks: [axiom]
+    ports:
+      - "4001:4001"   # P2P
+      - "5001:5001"   # API
+      - "8080:8080"   # Gateway
+    volumes:
+      - ipfs-data:/data/ipfs
+    healthcheck:
+      test: ["CMD", "ipfs", "id"]
+      interval: 10s
+      retries: 5
+
+  # ──────────────────────────────────────────────────────────
+  #  The Graph Node
+  # ──────────────────────────────────────────────────────────
+  graph-node:
+    image: graphprotocol/graph-node:v0.35.0
+    container_name: axiom-graph-node
+    restart: unless-stopped
+    networks: [axiom]
+    ports:
+      - "8000:8000"   # GraphQL HTTP
+      - "8001:8001"   # GraphQL WebSocket
+      - "8020:8020"   # JSON-RPC admin
+      - "8030:8030"   # Indexing status
+      - "8040:8040"   # Prometheus metrics
+    environment:
+      postgres_host:     postgres
+      postgres_user:     graph
+      postgres_pass:     graph
+      postgres_db:       graph
+      ipfs:              http://ipfs:5001
+      ethereum:          "axiom-l3:http://l3-node:8545"
+      GRAPH_LOG:         info
+      GRAPH_LOG_QUERY_TIMING: "true"
+      ETHEREUM_REORG_THRESHOLD: 1
+      ETHEREUM_ANCESTOR_COUNT: 1
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ipfs:
+        condition: service_healthy
+      l3-node:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8030/"]
+      interval: 15s
+      retries: 10
+
+  # ──────────────────────────────────────────────────────────
+  #  Frontend (Next.js — optional, can run with bun dev)
+  # ──────────────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: axiom-frontend
+    restart: unless-stopped
+    networks: [axiom]
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - NEXT_PUBLIC_L3_RPC_URL=ws://localhost:8546
+      - NEXT_PUBLIC_GRAPH_URL=http://localhost:8000/subgraphs/name/axiom/axiom-world
+      - NEXT_PUBLIC_WORLD_ADDRESS=${WORLD_ADDRESS:-0x0}
+    command: ["bun", "run", "dev"]
+    profiles: ["frontend"]  # only starts with: docker compose --profile frontend up
+
+  # ──────────────────────────────────────────────────────────
+  #  Prometheus + Grafana (monitoring)
+  # ──────────────────────────────────────────────────────────
+  prometheus:
+    image: prom/prometheus:v2.51.0
+    container_name: axiom-prometheus
+    restart: unless-stopped
+    networks: [axiom]
+    ports:
+      - "9091:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    profiles: ["monitoring"]
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.retention.time=7d

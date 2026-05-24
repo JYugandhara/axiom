@@ -1,0 +1,22 @@
+{
+  "name": "axiom-subgraph",
+  "version": "0.1.0",
+  "description": "The Graph subgraph for AXIOM on-chain game events",
+  "scripts": {
+    "codegen":        "graph codegen",
+    "build":          "graph build",
+    "deploy:local":   "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 axiom/axiom-world",
+    "deploy:hosted":  "graph deploy --product hosted-service axiom-world/axiom",
+    "deploy:studio":  "graph deploy --studio axiom-world",
+    "create:local":   "graph create --node http://localhost:8020/ axiom/axiom-world",
+    "remove:local":   "graph remove --node http://localhost:8020/ axiom/axiom-world",
+    "test":           "graph test"
+  },
+  "dependencies": {
+    "@graphprotocol/graph-ts":  "^0.32.0"
+  },
+  "devDependencies": {
+    "@graphprotocol/graph-cli": "^0.73.0",
+    "matchstick-as":            "^0.6.0"
+  }
+}

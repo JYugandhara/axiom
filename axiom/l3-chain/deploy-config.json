@@ -1,0 +1,64 @@
+{
+  "_comment": "OP Stack deployment config for AXIOM L3. Used by op-deployer to deploy L1 bridge contracts and configure the rollup. Fill in real addresses before testnet/mainnet deploy.",
+
+  "l1ChainID":          421614,
+  "l2ChainID":          42069,
+  "l2BlockTime":        1,
+  "maxSequencerDrift":  600,
+  "sequencerWindowSize":3600,
+  "channelTimeout":     300,
+  "p2pSequencerAddress":"0x0000000000000000000000000000000000000001",
+  "batchInboxAddress":  "0xff00000000000000000000000000000000042069",
+  "batchSenderAddress": "0x0000000000000000000000000000000000000002",
+
+  "l2OutputOracleSubmissionInterval": 120,
+  "l2OutputOracleStartingBlockNumber": 0,
+  "l2OutputOracleStartingTimestamp":   1704067200,
+  "l2OutputOracleProposer":   "0x0000000000000000000000000000000000000003",
+  "l2OutputOracleChallenger": "0x0000000000000000000000000000000000000004",
+
+  "finalizationPeriodSeconds": 604800,
+
+  "proxyAdminOwner":        "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+  "finalSystemOwner":       "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+  "baseFeeVaultRecipient":  "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+  "l1FeeVaultRecipient":    "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+  "sequencerFeeVaultRecipient": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+
+  "baseFeeVaultMinimumWithdrawalAmount":     "0x8AC7230489E80000",
+  "l1FeeVaultMinimumWithdrawalAmount":       "0x8AC7230489E80000",
+  "sequencerFeeVaultMinimumWithdrawalAmount":"0x8AC7230489E80000",
+
+  "baseFeeVaultWithdrawalNetwork":     0,
+  "l1FeeVaultWithdrawalNetwork":       0,
+  "sequencerFeeVaultWithdrawalNetwork":0,
+
+  "gasPriceOracleOverhead":  2100,
+  "gasPriceOracleScalar":    1000000,
+
+  "eip1559Denominator":        50,
+  "eip1559DenominatorCanyon":  250,
+  "eip1559Elasticity":         6,
+
+  "l2GenesisBlockGasLimit":        "0x2faf080",
+  "l2GenesisBlockBaseFeePerGas":   "0x3B9ACA00",
+  "l2GenesisRegolithTimeOffset":   "0x0",
+
+  "systemConfigStartBlock": 0,
+
+  "requiredProtocolVersion": "0x0000000000000000000000000000000000000000000000000000000000000000",
+  "recommendedProtocolVersion": "0x0000000000000000000000000000000000000000000000000000000000000000",
+
+  "fundDevAccounts": true,
+
+  "l1BlockTime":              12,
+  "l1GenesisBlockTimestamp":  "0x65000000",
+
+  "enableGovernance":         false,
+  "governanceTokenSymbol":    "AXM",
+  "governanceTokenName":      "AXIOM Token",
+  "governanceTokenOwner":     "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+
+  "deploymentWaitConfirmations": 1,
+  "numDeployConfirmations":      1
+}
